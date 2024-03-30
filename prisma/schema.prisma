@@ -1,0 +1,73 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+
+model Apprenant {
+  id             Int @id @default(autoincrement())
+  Nom            String
+  Prenom         String
+  sexe           String
+  Date_naissance DateTime
+  Adress         String
+  Tel            String
+  mail           String
+  cohorte        Cohorte @relation(fields: [cohorteId],references :[id])
+  cohorteId      Int
+  machine        Machine @relation(fields: [machineId], references :[id])
+  machineId      Int
+  session        Session @relation(fields : [sessionId], references :[id])
+  sessionId      Int
+}
+
+model Cohorte {
+  id            Int @id @default(autoincrement())
+  Annee         Int
+  apprenant     Apprenant[]
+  session       Session[]
+  coach         Coach[]
+}
+
+model Machine {
+  id          Int @id @default(autoincrement())
+  Marque      String
+  apprenant   Apprenant[]
+}
+
+model Session {
+  id        Int @id @default(autoincrement())
+  Creneaux  String
+  cohorte   Cohorte @relation(fields : [sessionId], references :[id])
+  sessionId Int
+  apprenant Apprenant[]
+  coach     SessionCoach[]
+}
+
+model Coach {
+  id      Int @id @default(autoincrement())
+  Nom     String
+  Prenom  String
+  cohorte Cohorte @relation(fields :[coachId], references : [id])
+  coachId  Int
+  session SessionCoach[]
+}
+
+model SessionCoach {
+  id  Int @id @default(autoincrement())
+coach  Coach @relation(fields : [coachId], references :[id])
+coachId  Int
+session Session @relation(fields :[sessionId], references:[id])
+sessionId  Int
+}
